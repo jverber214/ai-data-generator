@@ -1,16 +1,17 @@
 import openai
 import os
 from pywebio import start_server
-from pywebio.output import put_markdown, put_file, put_text
+from pywebio.output import put_file, put_text, put_html
 from pywebio.input import input, radio, NUMBER
 from io import BytesIO
+from dotenv import load_dotenv
+from openai import OpenAIError
 import pandas as pd
 import json
 
 # Ensure API key is set
-openai.api_key = os.getenv("OPEsk-proj-EEphWp6cHL1Lae6nqafI69Ne-i7vkBpuw5ZI4MQATBk4QLn7ndp_XE0p8wtE9I7ayYdr0ahTnET3BlbkFJ4x2QMjZf0-9u2kiwrjaPIvhKAXo9TaNEczQ_ttCgFa5ptiufyefEv94t-8w5t4ZvsTnoV3sikA")
-if not openai.api_key:
-    raise EnvironmentError("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
+load_dotenv()  # Loads environment variables from .env
+openai_api_key = os.getenv("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")
 
 # Function to generate data with error handling
 def generate_data_with_chatgpt(num_entries, include_political):
@@ -24,13 +25,24 @@ def generate_data_with_chatgpt(num_entries, include_political):
             prompt += " Include a political_party field."
         prompt += " Format each entry as JSON."
 
-        # Call the OpenAI API
+        #Call the OpenAI API
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=500  # Adjust for the desired response size
         )
+        # Use openai.Chat.create instead of openai.ChatCompletion.create
+        #response = openai.Chat.create(
+         #   model="gpt-4",  # or another model name
+          #  messages=[
+           #     {"role": "system", "content": "You are a helpful assistant."},
+            #    {"role": "user", "content": "Please generate some data."}
+            #]
+        #)
 
+        # Extract the message content from the response
+        content = response['choices'][0]['message']['content']
+        print(content)
         # Parse the JSON response
         response_text = response['choices'][0]['message']['content']
         data = json.loads(response_text)  # Convert to list of dictionaries
@@ -56,7 +68,7 @@ def output_data(data, file_format):
 
 # PyWebIO interface
 def web_interface():
-    put_markdown("# Data Creation Application", center=True)
+    put_html("<h1 style='text-align: center;'>Data Creation Application</h1>")
 
     # User input prompts
     num_entries = input("How many data entries would you like?", type=NUMBER, required=True)
