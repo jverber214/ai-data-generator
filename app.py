@@ -92,3 +92,6 @@ def web_interface():
 # Start PyWebIO server directly
 if __name__ == "__main__":
     start_server(web_interface, port=8080, debug=True)
+# Run the app.py file in the terminal with the command python app.py. This will start the PyWebIO server and open a new tab in your web browser with the application interface. You can then interact with the application to generate and download the fictional data.
+
+
