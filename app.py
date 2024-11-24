@@ -11,49 +11,43 @@ import json
 
 # Ensure API key is set
 load_dotenv()  # Loads environment variables from .env
-openai_api_key = os.getenv("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")
+openai_api_key = os.getenv("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")
 
 # Function to generate data with error handling
 def generate_data_with_chatgpt(num_entries, include_political):
     try:
-        # Construct prompt for ChatGPT
+        # Construct a strict JSON output prompt
         prompt = (
-            f"Generate {num_entries} entries of fictional data with the following fields: "
-            "name, address, phone, birth date."
+            f"Generate {num_entries} entries of fictional data. Each entry should be a JSON object "
+            f"with the following fields: 'name', 'address', 'phone', 'birth_date'."
         )
         if include_political:
-            prompt += " Include a political_party field."
-        prompt += " Format each entry as JSON."
-
-        #Call the OpenAI API
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500  # Adjust for the desired response size
+            prompt += " Include a field named 'political_party'."
+        prompt += (
+            " Respond strictly with a JSON array of objects. Do not include any explanations or other text."
         )
-        # Use openai.Chat.create instead of openai.ChatCompletion.create
-        #response = openai.Chat.create(
-         #   model="gpt-4",  # or another model name
-          #  messages=[
-           #     {"role": "system", "content": "You are a helpful assistant."},
-            #    {"role": "user", "content": "Please generate some data."}
-            #]
-        #)
 
-        # Extract the message content from the response
-        content = response['choices'][0]['message']['content']
-        print(content)
-        # Parse the JSON response
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Adjust model as needed
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000  # Allow enough tokens for larger datasets
+        )
+
+        # Parse the response content
         response_text = response['choices'][0]['message']['content']
-        data = json.loads(response_text)  # Convert to list of dictionaries
+        data = json.loads(response_text)  # Convert response to Python list/dict
         return data
 
-    except json.JSONDecodeError:
-        put_text("Error: Could not parse data from ChatGPT as JSON.")
+    except json.JSONDecodeError as e:
+        # Log response for debugging purposes
+        print("Raw response from ChatGPT:", response['choices'][0]['message']['content'])
+        put_text("Error: Could not parse data from ChatGPT as JSON. Please refine the input.")
         return None
     except openai.error.OpenAIError as e:
         put_text(f"OpenAI API error: {e}")
         return None
+
 
 # Function to output data in the chosen format
 def output_data(data, file_format):
