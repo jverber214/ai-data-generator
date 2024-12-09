@@ -11,7 +11,7 @@ import json
 
 # Ensure API key is set
 load_dotenv()  # Loads environment variables from .env
-openai_api_key = os.getenv("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")
+openai_api_key = os.getenv("sk-proj-your-project-key")
 
 # Function to generate data with error handling
 def generate_data_with_chatgpt(num_entries, include_political):
