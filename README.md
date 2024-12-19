@@ -9,7 +9,7 @@ Interactive Web Interface: The interface prompts users for input parameters such
 
 Error Handling: Includes robust error handling for OpenAI API responses and JSON parsing.
 
-Environment Configuration: Uses environment variables (via `dotenv`) for secure API key management.
+#not implemented yet# Environment Configuration: Uses environment variables (via `dotenv`) for secure API key management.
 
 To run the application, execute `python app.py.` This starts a local PyWebIO server and opens the application interface in a web browser(at the following address: 0.0.0.0:8080).
 
